@@ -6,11 +6,12 @@
 #include <sstream>
 using namespace std;
 
-struct Author {
-    int author_id;
-    string author_name;
-    string author_surname;
-    vector <int> b;             
+class Author {
+    public: 
+        int author_id;
+        string author_name;
+        string author_surname;
+        vector <int> b;             
 };
 
 struct Publicant {
@@ -20,14 +21,35 @@ struct Publicant {
     vector <int> b;              
 };
 
-struct Book {
-    int book_id;
-    string book_name;
-    string author_name;     
-    string author_surname;  
-    string book_category;
-    string book_publicant;
-    int quantity;
+class Book {
+    public:
+        int book_id;
+        string book_name;
+        string author_name;     
+        string author_surname;  
+        string book_category;
+        string book_publicant;
+        int quantity;
+    
+    void setQuantity(int a) {
+        this->quantity = a;
+    }
+
+    void setName(string name) {
+        this->book_name = name;
+    }
+
+    void setAuthorName(string name) {
+        this->author_name = name;
+    }
+
+    void setCategory(string name)  {
+        this->book_category = name;
+    }
+
+    void setPublicant(string name)  {
+        this->book_publicant = name;
+    }
 };
 
 struct Date {
@@ -188,6 +210,7 @@ string toLower(string a) {
 
 int readInt() {
     int number;
+
     while (true) {
         cin >> number;
         if (cin.fail()) {
@@ -255,7 +278,7 @@ void displayAdminPanel(){
             manageAuthors();
             break;
         case 3: 
-            deleteBook();
+            manageBooks();
             break;
         case 6: 
             searchByNamePublicantAuthor();
@@ -298,6 +321,8 @@ void displayStudentPanel(){
     }
 };
 
+
+// Category
 void manageCategory() {
     int command;
     cout 
@@ -503,10 +528,9 @@ void addAuthor() {
     cout << "Author ID: ";
     id = readInt();
 
-    // reject a duplicate author ID
     for (int i = 0; i < authors.size(); i++) {
         if (authors[i].author_id == id) {
-            cout << "An author with this ID already exists." << endl;
+            cout << "An author with this ID already exists" << endl;
             return;
         }
     }
@@ -517,13 +541,11 @@ void addAuthor() {
     cout << "Last name: ";
     getline(cin, surname);
 
-    // reject empty names
     if (name.empty() || surname.empty()) {
-        cout << "Name and surname cannot be empty." << endl;
+        cout << "Name and surname cannot be empty" << endl;
         return;
     }
 
-    // read book IDs one at a time, 0 to finish
     int bookId;
     while (true) {
         cout << "Enter book ID (0 to finish): ";
@@ -532,7 +554,6 @@ void addAuthor() {
         if (bookId == 0)
             break;
 
-        // the book must exist
         bool exists = false;
         for (int i = 0; i < library.size(); i++) {
             if (library[i].book_id == bookId) {
@@ -545,7 +566,6 @@ void addAuthor() {
             continue;
         }
 
-        // no duplicates in this author's list
         bool already = false;
         for (int i = 0; i < b.size(); i++) {
             if (b[i] == bookId) {
@@ -591,6 +611,51 @@ void showAuthor() {
     manageAuthors();
 }
 
+// BOOKS
+
+void manageBooks() {
+    int command;
+
+    cout << endl << "MANAGE BOOKS" <<  endl
+    << "Edit book: 1" << endl
+    << "Add book: 2" << endl
+    << "Delete book: 3" << endl
+    << "Show all books: 4" << endl
+    << "Back: 5" << endl << endl
+    << "Enter command number: ";
+    cin >> command;
+
+    switch(command) {
+        case 1: 
+            editBook();
+            break;
+        case 2: 
+            addBook();
+            break;
+        case 3: 
+            deleteBook();
+            break;
+        case 4: 
+            showBooks();
+            break;
+        case 5: 
+            displayAdminPanel();
+            break;
+        default: 
+            cout << "UKNOWN COMMAND" <<  endl;
+            manageBooks();
+        
+    }
+}
+
+void addBook() {
+
+
+}
+
+void editBook() {
+
+}
 
 
 void showBooks() {
