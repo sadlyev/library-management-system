@@ -2,6 +2,8 @@
 #include <string>
 #include <cctype>
 #include <vector>
+#include <fstream>
+#include <sstream>
 using namespace std;
 
 struct Author {
@@ -103,7 +105,14 @@ vector <string> category = {
 // HELPFUL FUNCTIONS
 
 // helps to turn all characters of string to lowercase
-string toLower();
+string toLower(); //  done
+int readInt(); // done
+void saveBooks(); // not done
+void saveAuthors(); // not done
+void savePublicant(); // not done
+void saveBooked(); // not done
+void saveCategory(); // not done
+
 
 
 
@@ -127,10 +136,10 @@ void addCategory(); // done
 void showCategory(); // done
 
 // to manage authors
-void manageAuthors(); // not done
-void updateAuthor(); // not done
-void deleteAuthor(); // not done
-void addAuthor(); // not done
+void manageAuthors(); // done
+void deleteAuthor(); // done
+void addAuthor(); // done
+void showAuthor(); // done
 
 // to manage books
 void manageBooks(); // not done;
@@ -168,7 +177,7 @@ void showBooks();  // done
 
 
 
-
+// HELPFULL
 string toLower(string a) {
     
     for (int i = 0; i < a.length(); i++) {
@@ -176,6 +185,26 @@ string toLower(string a) {
     }
     return a;
 }
+
+int readInt() {
+    int number;
+    while (true) {
+        cin >> number;
+        if (cin.fail()) {
+            cin.clear();              
+            cin.ignore(1000, '\n');    
+            cout << "Invalid input, enter a number: ";
+        }
+        else {
+            cin.ignore(1000, '\n');  
+            return number;
+        }
+    }
+}
+
+
+
+
 
 
 void displayMainPanel() {
@@ -221,6 +250,9 @@ void displayAdminPanel(){
     switch(command) {
         case 1: 
             manageCategory();
+            break;
+        case 2:
+            manageAuthors();
             break;
         case 3: 
             deleteBook();
@@ -398,6 +430,169 @@ void showCategory() {
     manageCategory();
 }
 
+
+// AUTHOR
+
+void manageAuthors() {
+    int command;
+
+    cout << endl
+    << "AUTHOR MANAGEMENT" << endl
+    << "Delete Author: 1" << endl
+    << "Add Author: 2" << endl
+    << "Show Authors: 3" << endl
+    << "Back: 4" << endl << endl
+    << "Please enter command number: " <<  endl;
+
+    cin >> command;
+
+    switch(command) {
+        case 1: 
+            deleteAuthor();
+            break;
+        case 2:
+            addAuthor();
+            break;
+        case 3:
+            showAuthor();
+            break;
+        case 4:
+            displayAdminPanel();
+            break;
+        default: 
+            cout << "UKNOWN COMMAND" << endl;
+            manageAuthors();
+    }
+}
+
+
+
+void deleteAuthor() {
+    string name_author;
+    bool  exists = false;
+    cout << endl << "DELETING AUTHOR" <<  endl
+    << "Please enter author name or surname: ";
+    cin  >> ws;
+    getline(cin, name_author);
+    name_author = toLower(name_author);
+
+    for (int i = 0; i < authors.size();i++) {
+        if (toLower(authors[i].author_name) == name_author || toLower(authors[i].author_surname) == name_author || ( toLower(authors[i].author_name) + " " + toLower(authors[i].author_surname ) == name_author)) {
+            authors.erase(authors.begin() + i);
+            cout << "Author have been successfully deleted!" << endl;
+            exists = true;
+            manageAuthors();
+            break;
+
+        }
+    }
+
+    if (!exists) {
+        cout << "Author with this surname or name was not found(" << endl;
+        manageAuthors();
+    }
+}
+
+void addAuthor() {
+    int id;
+    string name, surname;
+    vector<int> b;
+
+    cout << endl << "ADDING AUTHOR" << endl;
+
+    cout << "Author ID: ";
+    id = readInt();
+
+    // reject a duplicate author ID
+    for (int i = 0; i < authors.size(); i++) {
+        if (authors[i].author_id == id) {
+            cout << "An author with this ID already exists." << endl;
+            return;
+        }
+    }
+
+    cout << "First name: ";
+    getline(cin, name);
+
+    cout << "Last name: ";
+    getline(cin, surname);
+
+    // reject empty names
+    if (name.empty() || surname.empty()) {
+        cout << "Name and surname cannot be empty." << endl;
+        return;
+    }
+
+    // read book IDs one at a time, 0 to finish
+    int bookId;
+    while (true) {
+        cout << "Enter book ID (0 to finish): ";
+        bookId = readInt();
+
+        if (bookId == 0)
+            break;
+
+        // the book must exist
+        bool exists = false;
+        for (int i = 0; i < library.size(); i++) {
+            if (library[i].book_id == bookId) {
+                exists = true;
+                break;
+            }
+        }
+        if (!exists) {
+            cout << "No book with this ID." << endl;
+            continue;
+        }
+
+        // no duplicates in this author's list
+        bool already = false;
+        for (int i = 0; i < b.size(); i++) {
+            if (b[i] == bookId) {
+                already = true;
+                break;
+            }
+        }
+        if (already) {
+            cout << "Book already added." << endl;
+            continue;
+        }
+
+        b.push_back(bookId);
+    }
+
+    Author a;
+    a.author_id = id;
+    a.author_name = name;
+    a.author_surname = surname;
+    a.b = b;
+
+    authors.push_back(a);
+
+    cout << "Author added." << endl;
+    manageAuthors();
+}
+
+void showAuthor() {
+    cout << endl <<  "ALL AUTHORS" << endl;
+
+    for (int i = 0; i < authors.size(); i++) {
+        cout << endl <<  authors[i].author_id << " | " << authors[i].author_name << " " << authors[i].author_surname << " | " << "Books: " << endl;
+         for (int j = 0; j < library.size();j++) {
+            for  (int d = 0; d < authors[i].b.size();d++) {
+                if (authors[i].b[d] == library[j].book_id) {
+                    cout << library[j].book_name << " | " << library[j].book_category << " | " << "Quantity: " << library[j].quantity << endl;
+                }
+            }
+        }
+        
+    }
+
+    manageAuthors();
+}
+
+
+
 void showBooks() {
     for (int i = 0; i < library.size(); i++) {
         if (library[i].book_id != 0) {
@@ -407,6 +602,8 @@ void showBooks() {
 
     displayStudentPanel();
 }
+
+
 
 void deleteBook() {
     int id;
