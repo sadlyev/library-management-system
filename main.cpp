@@ -232,10 +232,10 @@ int readInt() {
 
 void displayMainPanel() {
 
-    int command = 0;
+    int command;
 
     cout << endl << endl << "Admin Module: 1" << endl << "Student Module: 2" <<  endl << "Please Enter Module number: ";
-    cin >> command;
+    command = readInt();
 
     switch (command) {
         case 1: 
@@ -268,7 +268,7 @@ void displayAdminPanel(){
     << endl
     << "Back: 8" << endl
     << "Please enter command number: ";
-    cin >> command;
+    command = readInt();
 
     switch(command) {
         case 1: 
@@ -306,7 +306,7 @@ void displayStudentPanel(){
     << endl
     << "Back: 3" << endl
     << "Please enter command number: ";
-    cin >> command;
+    command = readInt();
 
     switch(command) {
         case 2: 
@@ -333,7 +333,7 @@ void manageCategory() {
     << "Show all categories: 4" << endl
     << "Back: 5" << endl << endl
     << "Please enter command number: ";
-    cin >> command;
+    command = readInt();
 
     switch(command) {
         case 1: 
@@ -623,7 +623,7 @@ void manageBooks() {
     << "Show all books: 4" << endl
     << "Back: 5" << endl << endl
     << "Enter command number: ";
-    cin >> command;
+    command = readInt();
 
     switch(command) {
         case 1: 
@@ -654,11 +654,139 @@ void addBook() {
 }
 
 void editBook() {
+    int book_id;
+    bool exists = false;
 
+    cout << "EDITING BOOK" << endl
+    << "Please enter book_id of the book you want to edit(0 to quit): " << endl;
+    book_id = readInt();
+    if (book_id == 0) {
+        manageBooks();
+        return;
+    }
+
+    for (int i = 0; i < library.size();i++) {
+        if (library[i].book_id == book_id) {
+            exists = true;
+        }
+    }
+
+    if (exists) {
+        int command;
+
+        cout << "BOOK FOUND" << endl
+        << "Edit Name: 1" << endl
+        << "Edit Quantity: 2" << endl
+        << "Edit Author Name: 3" << endl
+        << "Edit Publicant: 4" << endl 
+        << "Back: 5" << endl << endl
+        << "Please enter number of command: ";
+        command = readInt();
+
+        switch(command) {
+            case 1: {
+                string name;
+                cout << "Please enter new name for the book(0 to quit): " << endl;
+                cin >> ws;
+                getline(cin, name);
+                if (name == "0") {
+                    manageBooks();
+                    break;
+                }
+                if (name.empty()) {
+                    cout << "Book name cannot be empty!" << endl;
+                    manageBooks();
+                    break;
+                }
+                library[book_id - 1].setName(name);
+                cout << "Book name was successfully updated" << endl;
+                manageBooks();
+                break;
+            }
+            case 2: {
+                int num;
+                cout << "Please enter book quantity(-1 to quit): ";
+                num = readInt();
+                if (num == 0) {
+                    manageBooks();
+                    break;
+                }
+                library[book_id - 1].setQuantity(num);
+                cout << "Book quantity was successfully updated" <<  endl;
+                break;
+            }
+            case 3: {
+                string name, surname;
+                cout << "Please enter Author first name(0 to quit): ";
+                cin >> ws;
+                getline(cin, name);
+                if (name == "0") {
+                    manageBooks();
+                    break;
+                }
+                cout << "PLease enter Author last name(0 to quit): ";
+                if (surname == "0") {
+                    manageBooks();
+                    break;
+                }
+                cin >> ws;
+                getline(cin, surname);
+                if (name.empty() || surname.empty()) {
+                    cout << "Author name or last name cannot be empty" << endl;
+                    manageBooks();
+                    break;
+                }
+                library[book_id - 1].setAuthorName(name);
+                cout << "Book author name was updated successfuly!" << endl;
+                manageBooks();
+                break;
+            }
+            case 4: {
+                string name;
+                cout << "Please enter publicant name(0 to quit): ";
+                cin >> ws;
+                getline(cin, name);
+                if (name == "0") {
+                    manageBooks();
+                    break;
+                }
+                if (name.empty()) {
+                    cout << "Publicant name cannot be empty" << endl;
+                    manageBooks();
+                    break;
+                }
+                library[book_id - 1].setPublicant(name);
+                cout << "Book publicant name was updated successfully" << endl;
+                manageBooks();
+                break;
+            }
+            case 5: {
+                manageBooks();
+                break;
+            } 
+            default : {
+                cout << "UNKNOWN COMMAND" <<  endl;
+                editBook();
+                break;
+            }
+        }
+    }
 }
 
 
+
+
 void showBooks() {
+    for (int i = 0; i < library.size(); i++) {
+        if (library[i].book_id != 0) {
+            cout << library[i].book_id << " | " << library[i].book_name << " | " << library[i].author_name << " " << library[i].author_surname << endl;
+        } 
+    }
+
+    manageBooks();
+}
+
+void showBooksStudent() {
     for (int i = 0; i < library.size(); i++) {
         if (library[i].book_id != 0) {
             cout << library[i].book_id << " | " << library[i].book_name << " | " << library[i].author_name << " " << library[i].author_surname << endl;
@@ -692,7 +820,7 @@ void deleteBook() {
         } 
     }
 
-    displayAdminPanel();
+    manageBooks();
 
 };
 
@@ -720,10 +848,6 @@ void searchByNamePublicantAuthor() {
 
     displayAdminPanel();
 }
-
-
-
-
 
 
 int main() {
