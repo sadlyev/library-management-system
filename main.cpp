@@ -30,6 +30,10 @@ class Book {
         string book_category;
         string book_publicant;
         int quantity;
+
+    void setId(int a){
+        this->book_id = a;
+    }
     
     void setQuantity(int a) {
         this->quantity = a;
@@ -39,8 +43,12 @@ class Book {
         this->book_name = name;
     }
 
-    void setAuthorName(string name) {
+    void setAuthorFirstName(string name) {
         this->author_name = name;
+    }
+
+    void setAuthorLastName(string name) {
+        this->author_surname = name;
     }
 
     void setCategory(string name)  {
@@ -52,17 +60,37 @@ class Book {
     }
 };
 
-struct Date {
-    int year;
-    int month;
-    int day;
-};
-
-struct Borrowed_book {
+class Borrowed_book {
     int book_id;
     string book_name;
     bool is_taken;         
-    Date return_date;
+    int quantity;
+
+    public :
+        Borrowed_book(int id, string name, bool taken, int quan) {
+            this->book_id = id;
+            this->book_name = name;
+            this->is_taken = taken;
+            this->quantity = quan;
+        }
+
+        int getId() {
+            return book_id;
+        }
+
+        string getBookName() {
+            return book_name;
+        }
+
+        bool getTaken() {
+            return is_taken;
+        }
+
+        int getQuantity() {
+            return quantity;
+        }
+
+
 };
 
 // Authors
@@ -98,10 +126,10 @@ vector <Book> library = {
 
 // Borrowed books
 vector <Borrowed_book> borrowed = {
-    {1, "The Silent Stage",  true,  {2026, 11, 25}},
-    {3, "Learning C++",      true,  {2026, 11, 15}},  
-    {7, "The Last Sorcerer", true,  {2026, 11, 30}},
-    {8, "Data Structures",   false, {2026, 11, 10}}   
+    {1, "The Silent Stage",  true, 1},
+    {3, "Learning C++",      true, 1},  
+    {7, "The Last Sorcerer", true, 1},
+    {8, "Data Structures",   false, 1}   
 };
 
 vector <string> category = {
@@ -164,11 +192,11 @@ void addAuthor(); // done
 void showAuthor(); // done
 
 // to manage books
-void manageBooks(); // not done;
-void addBook(); // not done;
-void editBook(); // not done
+void manageBooks(); //  done;
+void addBook(); //  done;
+void editBook(); //  done
 void deleteBook(); // done
-void showBooks(); // not done
+void showBooks(); // done
 
 // to manage issusing a book
 void issueBook(); // not done
@@ -279,6 +307,9 @@ void displayAdminPanel(){
             break;
         case 3: 
             manageBooks();
+            break;
+        case 4: 
+            issueBook();
             break;
         case 6: 
             searchByNamePublicantAuthor();
@@ -649,8 +680,117 @@ void manageBooks() {
 }
 
 void addBook() {
+    Book new_book;
+    string book_name, author_first_name, author_last_name, publicant_name, new_category;
+    int quan;
+    bool exists = false;
+
+    cout << "ADDING A BOOK" << endl
+    << "Please enter book name (0 to quit): ";
+    cin >> ws;
+    getline(cin, book_name);
+    
+    if (book_name == "0"){
+        manageBooks();
+        return;
+    }
+    if (book_name.empty()){
+        cout << "Book name cannot be empty!" << endl;
+        manageBooks();
+        return;
+    }
+
+    cout << "Please enter author first name(0 to quit): ";
+    cin >> ws;
+    getline(cin, author_first_name);
+
+    if (author_first_name == "0"){
+        manageBooks();
+        return;
+    }
+    if (author_first_name.empty()){
+        cout << "Author first name cannot be empty!" << endl;
+        manageBooks();
+        return;
+    }
+
+    cout << "Please enter author last name(0 to quit): ";
+    cin >> ws;
+    getline(cin, author_last_name);
+
+    if (author_last_name == "0"){
+        manageBooks();
+        return;
+    }
+    if (author_last_name.empty()){
+        cout << "Author last name cannot be empty!" << endl;
+        manageBooks();
+        return;
+    }
+
+    cout << "Please enter category name(0 to quit): ";
+    cin >> ws;
+    getline(cin, new_category);
+
+    if (new_category == "0"){
+        manageBooks();
+        return;
+    }
+
+    if (new_category.empty()){
+        cout << "Category name cannot be empty!" << endl;
+        manageBooks();
+        return;
+    }
+
+    for (int i = 0; i < category.size(); i++ ){
+        if (toLower(category[i]) == toLower(new_category)) {
+            exists =true;
+            break;
+        }
+    }
+
+    if (!exists) {
+        cout << "This category does not exist in category list, please add it first" << endl;
+        manageBooks();
+        return;
+    }
 
 
+    cout << "Please enter publicant name(0 to quit): ";
+    cin >> ws;
+    getline(cin, publicant_name);
+
+    if (publicant_name == "0"){
+        manageBooks();
+        return;
+    }
+    if (publicant_name.empty()){
+        cout << "Publicant name cannot be empty!" << endl;
+        manageBooks();
+        return;
+    }
+
+    cout << "Please enter quantity of the book(-1 to quit): ";
+    quan = readInt();
+
+    if (quan == -1){
+        manageBooks();
+        return;
+    }
+
+    
+    new_book.setId(library.size() +1);
+    new_book.setName(book_name);
+    new_book.setAuthorFirstName(author_first_name);
+    new_book.setAuthorLastName(author_last_name);
+    new_book.setCategory(new_category);
+    new_book.setPublicant(publicant_name);
+    new_book.setQuantity(quan);
+
+    library.push_back(new_book);
+    cout << endl << "New book have been successfully added!" << endl;
+    manageBooks();
 }
 
 void editBook() {
@@ -677,9 +817,10 @@ void editBook() {
         cout << "BOOK FOUND" << endl
         << "Edit Name: 1" << endl
         << "Edit Quantity: 2" << endl
-        << "Edit Author Name: 3" << endl
-        << "Edit Publicant: 4" << endl 
-        << "Back: 5" << endl << endl
+        << "Edit Author First Name: 3" << endl
+        << "Edit Author Last name: 4" << endl
+        << "Edit Publicant: 5" << endl 
+        << "Back: 6" << endl << endl
         << "Please enter number of command: ";
         command = readInt();
 
@@ -716,7 +857,7 @@ void editBook() {
                 break;
             }
             case 3: {
-                string name, surname;
+                string name;
                 cout << "Please enter Author first name(0 to quit): ";
                 cin >> ws;
                 getline(cin, name);
@@ -724,6 +865,19 @@ void editBook() {
                     manageBooks();
                     break;
                 }
+                
+                if (name.empty()) {
+                    cout << "Author name cannot be empty" << endl;
+                    manageBooks();
+                    break;
+                }
+                library[book_id - 1].setAuthorFirstName(name);
+                cout << "Book author name was updated successfuly!" << endl;
+                manageBooks();
+                break;
+            }
+            case 4: {
+                string surname;
                 cout << "PLease enter Author last name(0 to quit): ";
                 if (surname == "0") {
                     manageBooks();
@@ -731,17 +885,18 @@ void editBook() {
                 }
                 cin >> ws;
                 getline(cin, surname);
-                if (name.empty() || surname.empty()) {
-                    cout << "Author name or last name cannot be empty" << endl;
+                if (surname.empty()) {
+                    cout << "Author last name cannot be empty" << endl;
                     manageBooks();
                     break;
                 }
-                library[book_id - 1].setAuthorName(name);
-                cout << "Book author name was updated successfuly!" << endl;
+                library[book_id - 1].setAuthorLastName(surname);
+                cout << "Book author last name was updated successfuly!" << endl;
                 manageBooks();
                 break;
+                
             }
-            case 4: {
+            case 5: {
                 string name;
                 cout << "Please enter publicant name(0 to quit): ";
                 cin >> ws;
@@ -760,7 +915,7 @@ void editBook() {
                 manageBooks();
                 break;
             }
-            case 5: {
+            case 6: {
                 manageBooks();
                 break;
             } 
@@ -772,31 +927,6 @@ void editBook() {
         }
     }
 }
-
-
-
-
-void showBooks() {
-    for (int i = 0; i < library.size(); i++) {
-        if (library[i].book_id != 0) {
-            cout << library[i].book_id << " | " << library[i].book_name << " | " << library[i].author_name << " " << library[i].author_surname << endl;
-        } 
-    }
-
-    manageBooks();
-}
-
-void showBooksStudent() {
-    for (int i = 0; i < library.size(); i++) {
-        if (library[i].book_id != 0) {
-            cout << library[i].book_id << " | " << library[i].book_name << " | " << library[i].author_name << " " << library[i].author_surname << endl;
-        } 
-    }
-
-    displayStudentPanel();
-}
-
-
 
 void deleteBook() {
     int id;
@@ -823,6 +953,75 @@ void deleteBook() {
     manageBooks();
 
 };
+
+
+
+void showBooks() {
+    cout << endl << "ALL BOOKS" << endl;
+    for (int i = 0; i < library.size(); i++) {
+        if (library[i].book_id != 0) {
+            cout << library[i].book_id << " | " << library[i].book_name << " | " << library[i].author_name << " " << library[i].author_surname << endl;
+        } 
+    }
+
+    manageBooks();
+}
+// {1, "The Silent Stage",  true, 1},
+void issueBook() {
+    int book_id, quan;
+    bool exists = false;
+
+
+    cout << "ISSUING BOOK" << endl
+    << "Please enter book id you want to issue(-1 to quit): ";
+    book_id = readInt();
+
+    if (book_id == -1) {
+        displayAdminPanel();
+        return;
+    }
+
+    for (int i = 0; i < library.size();i++) {
+        if(library[i].book_id == book_id) {
+            exists = true;
+            break; 
+        }
+    }
+
+    if (!exists) {
+        cout << endl << "Book with this id does not exist!" << endl;
+        issueBook();
+        return;
+    }
+
+    cout << "Please enter issued quantity of the book(-1 to quit): ";
+    quan = readInt();
+
+    if (quan == -1) {
+        displayAdminPanel();
+        return;
+    }
+
+    Borrowed_book borrowed1(book_id, library[book_id].book_name, true, quan);
+
+    borrowed.push_back(borrowed1);
+
+    cout << "A book was issued to student" << endl;
+    displayAdminPanel();
+    return;
+};
+
+
+
+void showBooksStudent() {
+    for (int i = 0; i < library.size(); i++) {
+        if (library[i].book_id != 0) {
+            cout << library[i].book_id << " | " << library[i].book_name << " | " << library[i].author_name << " " << library[i].author_surname << endl;
+        } 
+    }
+
+    displayStudentPanel();
+}
 
 void searchByNamePublicantAuthor() {
     string searched;
