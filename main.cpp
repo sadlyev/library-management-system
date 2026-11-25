@@ -216,8 +216,8 @@ void searchBook(); // done
 
 void manageShow(); // done
 void showAuthors(); // done
-void showPublicants(); // not done
-void manageViewBooks(); // not done
+void showPublicants(); //  done
+void manageViewBooks(); // done
 void viewBooksOrder(bool is_ordered); // not done
 void showRequestedBooks(); // not done
 void showBorrowed(); // not done
@@ -322,6 +322,9 @@ void displayAdminPanel(){
             break;
         case 6: 
             manageSearch();
+            break;
+        case 7:
+            manageShow();
             break;
         case 8: 
             displayMainPanel();
@@ -1179,12 +1182,38 @@ void searchBook(){
 
 void manageShow(){ 
     int command;
-    cout << endl << "SHOW MANAGER" << endl;
+    cout << endl << "VIEW MANAGER" << endl
+    << "View Authors: 1" << endl
+    << "View Publicants: 2" << endl
+    << "View book manager: 3" << endl
+    << "View requested books: 4" << endl
+    << "View borrowed books: 5" << endl
+    << "Back: 6" << endl
+    << "Please enter command number: " << endl;
+    command = readInt();
+
+    switch(command) {
+        case 1:
+           showAuthors();
+           break;
+        case 2:
+            showPublicants();
+            break;
+        case 6:
+            displayAdminPanel();
+            break;
+        default:
+            cout << "UNKNOWN COMMAND" << endl; 
+            manageShow();
+            break; 
+    }
+
 }
+
 void showAuthors(){
     cout << endl <<  "ALL AUTHORS" << endl;
     for (int i = 0; i < authors.size();i++) {
-        cout << "Author Id: " << authors[i].author_id << " " << "Author name: " << authors[i].author_name <<" " << "Author last name: " <<  authors[i].author_surname << endl;
+        cout << "Author Id: " << authors[i].author_id << " " << "Author name: " << authors[i].author_name <<" " <<  authors[i].author_surname << endl;
         cout << "Author books: " << endl;
         for (int j = 0; j < library.size();j++) {
             for (int l = 0; l < authors[i].b.size();l++){
@@ -1193,14 +1222,49 @@ void showAuthors(){
                 }
             }
         }
+
+        cout << endl;
     }
+
+    manageShow();
+    return;
 } 
-void showPublicants(); // not done
-void ManageViewBooks(); // not done
+void showPublicants(){
+    cout << "ALL PUBLICANTS" << endl;
+    for (int i = 0;i < publicants.size();i++) {
+        cout << "Publicant name: " << publicants[i].publicant_name << " " << "City: " << publicants[i].city << endl;
+        cout << "Published books: " << endl;
+        for (int j = 0; j < library.size();j++){
+            for (int l = 0; l < publicants[i].b.size();l++){
+                if (library[j].book_id == publicants[i].b[l]) {
+                    cout << "Book name: " << library[j].book_name << endl;
+                }
+            }
+        }
+
+    cout << endl;
+    }
+
+    manageShow();
+    return;
+} 
+void manageViewBooks(){
+    int command;
+    cout << endl << "VIEW BOOKS" << endl
+    << "Show books in ascending order: 1" << endl
+    << "Show books in descending order: 2" << endl
+    << "Show book as they are: 3" << endl
+    << "Please enter command number: ";
+    command = readInt();
+
+    switch(command) {
+
+    }
+}; 
+
 void viewBooksOrder(bool is_ordered); // not done
-
-
-
+void showRequestedBooks(); // not done
+void showBorrowed(); // not done
 
 
 
