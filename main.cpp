@@ -90,6 +90,10 @@ class Borrowed_book {
             return quantity;
         }
 
+        void setTaken(bool a) {
+            this->is_taken = a;
+        }
+
 
 };
 
@@ -104,24 +108,24 @@ vector <Author> authors = {
 
 // Publicants
 vector <Publicant> publicants = {
-    {1, "Publicant-1", "Tashkent",  {1, 4, 8}},
-    {2, "Publicant-2", "Samarkand", {2, 6, 10}},
-    {3, "Publicant-3", "Bukhara",   {3, 7}},
-    {4, "Publicant-4", "Namangan",  {5, 9}}
+    {1, "Publicant 1", "Tashkent",  {1, 4, 8}},
+    {2, "Publicant 2", "Samarkand", {2, 6, 10}},
+    {3, "Publicant 3", "Bukhara",   {3, 7}},
+    {4, "Publicant 4", "Namangan",  {5, 9}}
 };
 
 // Books
 vector <Book> library = {
-    {1,  "The Silent Stage",    "Rustam",  "Sadiyev",  "Drama",    "Publicant-1", 5},
-    {2,  "Dragon of the North", "Aziz",    "Yanvarov", "Fantasy",  "Publicant-2", 3},
-    {3,  "Learning C++",        "Dilnoza", "Karimova", "Computer", "Publicant-3", 8},
-    {4,  "A Brief History",     "Jasur",   "Tursunov", "History",  "Publicant-1", 4},
-    {5,  "Love in Samarkand",   "Malika",  "Rahimova", "Romance",  "Publicant-4", 6},
-    {6,  "Curtain Call",        "Rustam",  "Sadiyev",  "Drama",    "Publicant-2", 2},
-    {7,  "The Last Sorcerer",   "Aziz",    "Yanvarov", "Fantasy",  "Publicant-3", 7},
-    {8,  "Data Structures",     "Dilnoza", "Karimova", "Computer", "Publicant-1", 10},
-    {9,  "Silk Road Empires",   "Jasur",   "Tursunov", "History",  "Publicant-4", 3},
-    {10, "Letters at Dawn",     "Malika",  "Rahimova", "Romance",  "Publicant-2", 1}
+    {1,  "The Silent Stage",    "Rustam",  "Sadiyev",  "Drama",    "Publicant 1", 5},
+    {2,  "Dragon of the North", "Aziz",    "Yanvarov", "Fantasy",  "Publicant 2", 3},
+    {3,  "Learning C++",        "Dilnoza", "Karimova", "Computer", "Publicant 3", 8},
+    {4,  "A Brief History",     "Jasur",   "Tursunov", "History",  "Publicant 1", 4},
+    {5,  "Love in Samarkand",   "Malika",  "Rahimova", "Romance",  "Publicant 4", 6},
+    {6,  "Curtain Call",        "Rustam",  "Sadiyev",  "Drama",    "Publicant 2", 2},
+    {7,  "The Last Sorcerer",   "Aziz",    "Yanvarov", "Fantasy",  "Publicant 3", 7},
+    {8,  "Data Structures",     "Dilnoza", "Karimova", "Computer", "Publicant 1", 10},
+    {9,  "Silk Road Empires",   "Jasur",   "Tursunov", "History",  "Publicant 4", 3},
+    {10, "Letters at Dawn",     "Malika",  "Rahimova", "Romance",  "Publicant 2", 1}
 };
 
 // Borrowed books
@@ -164,8 +168,6 @@ void saveBooked(); // not done
 void saveCategory(); // not done
 
 
-
-
 // MAIN FUNCTIONS
 
 // to show main panel
@@ -199,22 +201,26 @@ void deleteBook(); // done
 void showBooks(); // done
 
 // to manage issusing a book
-void issueBook(); // not done
+void issueBook(); //  done
 
 // to manage return of a book
-void returnBook(); // no done
+void returnBook(); // done
 
 // to search by author, book, publicant
-void searchByNamePublicantAuthor(); // done 
+void manageSearch(); // done
+void searchPublicant(); // done
+void searchAuthor(); // done
+void searchBook(); // done
 
-// to check reports
-void manageReports(); // not done
-void authorReports(); // not done
-void publicationReports(); // not done
-void bookReport(); // not done
-void requestedBooks(); // not done
-void issuesBooks(); // not done
+// to show everything
 
+void manageShow(); // done
+void showAuthors(); // done
+void showPublicants(); // not done
+void manageViewBooks(); // not done
+void viewBooksOrder(bool is_ordered); // not done
+void showRequestedBooks(); // not done
+void showBorrowed(); // not done
 
 
 
@@ -290,7 +296,7 @@ void displayAdminPanel(){
     << "Manage Author: 2" << endl 
     << "Manage Books: 3" << endl 
     << "Issue a new Book: 4" << endl 
-    << "Update details of a borrower: 5" << endl
+    << "Return borrowed book: 5" << endl
     << "Search authors, books, publicants: 6" << endl
     << "View authors, publications, books, requested books, issued books reports: 7" << endl
     << endl
@@ -311,14 +317,17 @@ void displayAdminPanel(){
         case 4: 
             issueBook();
             break;
+        case 5: 
+            returnBook();
+            break;
         case 6: 
-            searchByNamePublicantAuthor();
+            manageSearch();
             break;
         case 8: 
             displayMainPanel();
             break;
         default: 
-            cout << "UNKNOWN COMMAND" << endl;
+            cout << endl << "UNKNOWN COMMAND" << endl;
             displayAdminPanel();
     }
 
@@ -1011,6 +1020,190 @@ void issueBook() {
     return;
 };
 
+void returnBook() {
+    int book_id;
+    bool exists  =false;
+    cout << "RETURNING BOOK" << endl;
+    cout << "Please enter book id you want to return(-1 to quit): ";
+    book_id = readInt();
+
+    if (book_id == -1) {
+        displayAdminPanel();
+        return;
+    }
+
+    if (borrowed.size() == 0) {
+        cout << endl << "There are no borrowed books" << endl;
+    }
+
+    for (int i = 0; i < borrowed.size();i++) {
+        if (borrowed[i].getId() == book_id) {
+            exists = true;
+            break;
+        }
+    }
+
+    if (!exists) {
+        cout << "Book with this id was not found" << endl;
+        returnBook();
+        return;
+    }
+
+    for (int i = 0; i < borrowed.size();i++) {
+        if (borrowed[i].getId() == book_id) {
+            borrowed[i].setTaken(false);
+            cout << endl <<  "Borrowed book has been returned" << endl;
+            displayAdminPanel();
+            return;
+        }
+    }
+
+
+}
+
+void manageSearch() {
+    int command;
+    cout << endl << "SEARCH MANAGER" << endl
+    << "Search authors: 1" << endl
+    << "Search books: 2" << endl
+    << "Search publicant: 3" << endl
+    << "Back: 4" << endl;
+    command = readInt();
+
+    switch(command) {
+        case 1: 
+            searchAuthor();
+            break;
+        case 2: 
+            searchBook();
+            break;
+        case 3: 
+            searchPublicant();
+            break;
+        case 4: 
+            displayAdminPanel();
+            break;
+        default: 
+            cout << "UNKNOWN COMMAND" << endl;
+            manageSearch();
+            break;
+    }
+}
+
+void searchPublicant() {
+    string searched_word;
+    cout << "SEARCHING PUBLICANT" << endl
+    << "Please enter publicant name(0 to quit): ";
+    cin >> ws;
+    getline(cin, searched_word);
+
+    if (searched_word.empty()) {
+        cout  << "Publicant name cannot be empty" << endl;
+        searchPublicant();
+        return;
+    }
+
+    if (searched_word == "0") {
+        displayAdminPanel();
+        return;
+    }
+
+    cout << "SEARCH RESULT: " << endl;
+    for (int i  = 0; i < publicants.size(); i++) {
+        if (toLower(publicants[i].publicant_name).find(toLower(searched_word))  != string::npos) {
+            cout << "Publicant Name: " << publicants[i].publicant_name << " " << "Publicant city: " << publicants[i].city <<  endl;
+        }
+    }
+
+    displayAdminPanel();
+    return;
+}
+
+void searchAuthor() {
+    string searched_word;
+    cout << "SEARCHING AUTHOR" << endl
+    << "Please enter author name(0 to quit): ";
+    cin >> ws;
+    getline(cin, searched_word);
+
+    if (searched_word.empty()) {
+        cout  << "Author name cannot be empty" << endl;
+        searchPublicant();
+        return;
+    }
+
+    if (searched_word == "0") {
+        displayAdminPanel();
+        return;
+    }
+
+    cout << "SEARCH RESULT: " << endl;
+    for (int i  = 0; i < authors.size(); i++) {
+        if (toLower(authors[i].author_name).find(toLower(searched_word))  != string::npos || toLower(authors[i].author_surname).find(toLower(searched_word)) != string::npos || (toLower(authors[i].author_name) + " " + toLower(authors[i].author_surname)).find(toLower(searched_word)) != string::npos) {
+            cout << "Author name: " << authors[i].author_name << " " << "Author last name: " << authors[i].author_surname <<  endl;
+        }
+    }
+
+    displayAdminPanel();
+    return;
+}
+
+void searchBook(){
+    string searched_word;
+    cout << "SEARCHING BOOK" << endl
+    << "Please enter book name(0 to quit): ";
+    cin >> ws;
+    getline(cin, searched_word);
+
+    if (searched_word.empty()) {
+        cout  << "Book name cannot be empty" << endl;
+        searchPublicant();
+        return;
+    }
+
+    if (searched_word == "0") {
+        displayAdminPanel();
+        return;
+    }
+
+    cout << "SEARCH RESULT: " << endl;
+    for (int i  = 0; i < library.size(); i++) {
+        if (toLower(library[i].book_name).find(toLower(searched_word))  != string::npos) {
+            cout << "Book name: " << library[i].book_name << " " << "Quantity: " << library[i].quantity <<   endl;
+        }
+    }
+
+    displayAdminPanel();
+    return;
+}
+
+void manageShow(){ 
+    int command;
+    cout << endl << "SHOW MANAGER" << endl;
+}
+void showAuthors(){
+    cout << endl <<  "ALL AUTHORS" << endl;
+    for (int i = 0; i < authors.size();i++) {
+        cout << "Author Id: " << authors[i].author_id << " " << "Author name: " << authors[i].author_name <<" " << "Author last name: " <<  authors[i].author_surname << endl;
+        cout << "Author books: " << endl;
+        for (int j = 0; j < library.size();j++) {
+            for (int l = 0; l < authors[i].b.size();l++){
+                if (library[j].book_id == authors[i].b[l]) {
+                    cout << "Book id: " << library[j].book_id << " " << "Book name: " << library[j].book_name << " " << "Book Publicant: " << library[j].book_publicant <<  endl;
+                }
+            }
+        }
+    }
+} 
+void showPublicants(); // not done
+void ManageViewBooks(); // not done
+void viewBooksOrder(bool is_ordered); // not done
+
+
+
+
+
+
 
 
 void showBooksStudent() {
@@ -1023,30 +1216,9 @@ void showBooksStudent() {
     displayStudentPanel();
 }
 
-void searchByNamePublicantAuthor() {
-    string searched;
-    bool is_found = false;
 
-    cout << "Enter book, author or publicant name: ";
-    cin >> searched;
-    searched = toLower(searched);
 
-    for (int i  = 0; i < library.size(); i++) {
-        if (library[i].book_id > 0) {
-             if (toLower(library[i].author_name).find(searched) != string::npos || toLower(library[i].book_name).find(searched) != string::npos || toLower(library[i].book_publicant).find(searched) != string::npos) {
-                is_found = true;
-                cout << library[i].book_id << " | " << library[i].author_name << " | " << library[i].book_name << " | " << library[i].book_publicant << endl;  
-            }
-        }
-       
-    }
 
-    if (!is_found) {
-        cout << "No results matched: " << searched << endl;
-    }
-
-    displayAdminPanel();
-}
 
 
 int main() {
