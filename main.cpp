@@ -585,7 +585,7 @@ void displayStudentPanel(){
             studentIssuedBooks();
             break;
         case 2: 
-            showBooks();
+            showBooksStudent();
             break;
         case 3: 
             displayMainPanel();
