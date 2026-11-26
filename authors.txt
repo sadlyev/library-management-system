@@ -1,0 +1,5 @@
+1|Rustam|Sadiyev|1,6
+2|Aziz|Yanvarov|2,7
+3|Dilnoza|Karimova|3,8
+4|Jasur|Tursunov|4,9
+5|Malika|Rahimova|5,10

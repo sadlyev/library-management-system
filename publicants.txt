@@ -1,0 +1,4 @@
+1|Publicant 1|Tashkent|1,4,8
+2|Publicant 2|Samarkand|2,6,10
+3|Publicant 3|Bukhara|3,7
+4|Publicant 4|Namangan|5,9

@@ -6,12 +6,30 @@
 #include <sstream>
 using namespace std;
 
+struct Date {
+    int year;
+    int month;
+    int day;
+};
+
 class Author {
     public: 
         int author_id;
         string author_name;
         string author_surname;
-        vector <int> b;             
+        vector <int> b; 
+        
+        void setName(string name){
+            author_name = name;
+        }
+
+        void setLastName(string name) {
+            author_surname = name;
+        }
+
+        void setBook(int a){
+            b.push_back(a);
+        }
 };
 
 struct Publicant {
@@ -62,24 +80,22 @@ class Book {
 
 class Borrowed_book {
     int book_id;
-    string book_name;
     bool is_taken;         
     int quantity;
+    Date time;
 
     public :
-        Borrowed_book(int id, string name, bool taken, int quan) {
+        Borrowed_book(int id, bool taken, int quan, Date d) {
             this->book_id = id;
-            this->book_name = name;
             this->is_taken = taken;
             this->quantity = quan;
+            this->time.year = d.year;
+            this->time.month = d.month;
+            this->time.day = d.day;
         }
 
         int getId() {
             return book_id;
-        }
-
-        string getBookName() {
-            return book_name;
         }
 
         bool getTaken() {
@@ -90,6 +106,10 @@ class Borrowed_book {
             return quantity;
         }
 
+        Date getDate() {
+            return time;
+        }
+
         void setTaken(bool a) {
             this->is_taken = a;
         }
@@ -98,61 +118,26 @@ class Borrowed_book {
 };
 
 // Authors
-vector <Author> authors = {
-    {1, "Rustam",  "Sadiyev",  {1, 6}},
-    {2, "Aziz",    "Yanvarov", {2, 7}},
-    {3, "Dilnoza", "Karimova", {3, 8}},
-    {4, "Jasur",   "Tursunov", {4, 9}},
-    {5, "Malika",  "Rahimova", {5, 10}}
-};
+vector <Author> authors;
 
 // Publicants
-vector <Publicant> publicants = {
-    {1, "Publicant 1", "Tashkent",  {1, 4, 8}},
-    {2, "Publicant 2", "Samarkand", {2, 6, 10}},
-    {3, "Publicant 3", "Bukhara",   {3, 7}},
-    {4, "Publicant 4", "Namangan",  {5, 9}}
-};
+vector <Publicant> publicants;
 
 // Books
-vector <Book> library = {
-    {1,  "The Silent Stage",    "Rustam",  "Sadiyev",  "Drama",    "Publicant 1", 5},
-    {2,  "Dragon of the North", "Aziz",    "Yanvarov", "Fantasy",  "Publicant 2", 3},
-    {3,  "Learning C++",        "Dilnoza", "Karimova", "Computer", "Publicant 3", 8},
-    {4,  "A Brief History",     "Jasur",   "Tursunov", "History",  "Publicant 1", 4},
-    {5,  "Love in Samarkand",   "Malika",  "Rahimova", "Romance",  "Publicant 4", 6},
-    {6,  "Curtain Call",        "Rustam",  "Sadiyev",  "Drama",    "Publicant 2", 2},
-    {7,  "The Last Sorcerer",   "Aziz",    "Yanvarov", "Fantasy",  "Publicant 3", 7},
-    {8,  "Data Structures",     "Dilnoza", "Karimova", "Computer", "Publicant 1", 10},
-    {9,  "Silk Road Empires",   "Jasur",   "Tursunov", "History",  "Publicant 4", 3},
-    {10, "Letters at Dawn",     "Malika",  "Rahimova", "Romance",  "Publicant 2", 1}
-};
+vector <Book> library;
 
 // Borrowed books
-vector <Borrowed_book> borrowed = {
-    {1, "The Silent Stage",  true, 1},
-    {3, "Learning C++",      true, 1},  
-    {7, "The Last Sorcerer", true, 1},
-    {8, "Data Structures",   false, 1}   
-};
+vector <Borrowed_book> borrowed;
 
-vector <string> category = {
-    "Drama",
-    "Fantasy",
-    "Computer",
-    "History",
-    "Romance",
-    "Science",
-    "Mathematics",
-    "Biography",
-    "Poetry",
-    "Mystery",
-    "Adventure",
-    "Philosophy",
-    "Art",
-    "Geography",
-    "Children"
-};
+vector <string> category;
+
+vector <int> requested;
+
+const string AUTHORS_FILE    = "authors.txt";
+const string PUBLICANTS_FILE = "publicants.txt";
+const string BORROWED_FILE   = "borrowed.txt";
+const string CATEGORY_FILE   = "category.txt";
+const string REQUESTED_FILE  = "requested.txt";
 
 
 
@@ -161,11 +146,14 @@ vector <string> category = {
 // helps to turn all characters of string to lowercase
 string toLower(); //  done
 int readInt(); // done
-void saveBooks(); // not done
-void saveAuthors(); // not done
-void savePublicant(); // not done
-void saveBooked(); // not done
-void saveCategory(); // not done
+void loadAuthors(); // done
+void loadPublicants(); // done
+void loadBorrowed(); // done
+void loadCategory(); // done
+void loadRequested();  // done
+void saveRequested(); // done
+void loadAll(); // done
+
 
 
 // MAIN FUNCTIONS
@@ -191,7 +179,9 @@ void showCategory(); // done
 void manageAuthors(); // done
 void deleteAuthor(); // done
 void addAuthor(); // done
+void editAuthor(); // not done
 void showAuthor(); // done
+
 
 // to manage books
 void manageBooks(); //  done;
@@ -218,16 +208,15 @@ void manageShow(); // done
 void showAuthors(); // done
 void showPublicants(); //  done
 void manageViewBooks(); // done
-void viewBooksOrder(bool is_ordered); // not done
-void showRequestedBooks(); // not done
-void showBorrowed(); // not done
+void showRequestedBooks(); // done
+void showBorrowed(); // done
 
 
 
 // STUDENT FUNCTIONS
 
 // to show issues books
-void studentIssuesBooks(); // not done
+void studentIssuedBooks(); // done
 // to show books
 void showBooks();  // done
 
@@ -244,7 +233,6 @@ string toLower(string a) {
 
 int readInt() {
     int number;
-
     while (true) {
         cin >> number;
         if (cin.fail()) {
@@ -259,8 +247,249 @@ int readInt() {
     }
 }
 
+string intsToString(const vector<int>& v) {
+    string s;
+    for (int i = 0; i < v.size(); i++) {
+        if (i > 0) s += ",";
+        s += to_string(v[i]);
+    }
+    return s;
+}
 
+vector<int> stringToInts(const string& s) {
+    vector<int> v;
+    stringstream ss(s);
+    string part;
+    while (getline(ss, part, ',')) {
+        try { v.push_back(stoi(part)); } catch (...) {}
+    }
+    return v;
+}
 
+void saveBooks() {
+    ofstream out("books.txt");
+    if (!out) {
+        cout << "Could not open " << "books.txt" << " for writing" << endl;
+        return;
+    }
+
+    for (int i = 0; i < library.size(); i++) {
+        if (library[i].book_id == 0) continue;  
+
+        out << library[i].book_id << '|'
+            << library[i].book_name << '|'
+            << library[i].author_name << '|'
+            << library[i].author_surname << '|'
+            << library[i].book_category << '|'
+            << library[i].book_publicant << '|'
+            << library[i].quantity << '\n';
+    }
+}
+
+void loadBooks() {
+    ifstream in("books.txt");
+    if (!in) return;   
+
+    vector<Book> loaded;
+    string line;
+
+    while (getline(in, line)) {
+        if (line.empty()) continue;
+
+        stringstream ss(line);
+        string id, name, first, last, cat, pub, qty;
+
+        getline(ss, id,    '|');
+        getline(ss, name,  '|');
+        getline(ss, first, '|');
+        getline(ss, last,  '|');
+        getline(ss, cat,   '|');
+        getline(ss, pub,   '|');
+        getline(ss, qty,   '|');
+
+        try {
+            Book b;
+            b.setId(stoi(id));
+            b.setName(name);
+            b.setAuthorFirstName(first);
+            b.setAuthorLastName(last);
+            b.setCategory(cat);
+            b.setPublicant(pub);
+            b.setQuantity(stoi(qty));
+            loaded.push_back(b);
+        } catch (...) {
+        }
+    }
+
+    library = loaded;
+}
+
+void saveAuthors() {
+    ofstream out(AUTHORS_FILE);
+    if (!out) { cout << "Could not write " << AUTHORS_FILE << endl; return; }
+
+    for (int i = 0; i < authors.size(); i++) {
+        out << authors[i].author_id << '|'
+            << authors[i].author_name << '|'
+            << authors[i].author_surname << '|'
+            << intsToString(authors[i].b) << '\n';
+    }
+}
+
+void loadAuthors() {
+    ifstream in(AUTHORS_FILE);
+    if (!in) return;
+
+    vector<Author> loaded;
+    string line;
+    while (getline(in, line)) {
+        if (line.empty()) continue;
+        stringstream ss(line);
+        string id, name, surname, books;
+        getline(ss, id, '|');
+        getline(ss, name, '|');
+        getline(ss, surname, '|');
+        getline(ss, books, '|');
+
+        try {
+            Author a;
+            a.author_id = stoi(id);
+            a.author_name = name;
+            a.author_surname = surname;
+            a.b = stringToInts(books);
+            loaded.push_back(a);
+        } catch (...) {}
+    }
+    authors = loaded;
+}
+
+void savePublicant() {
+    ofstream out(PUBLICANTS_FILE);
+    if (!out) { cout << "Could not write " << PUBLICANTS_FILE << endl; return; }
+
+    for (int i = 0; i < publicants.size(); i++) {
+        out << publicants[i].publicant_id << '|'
+            << publicants[i].publicant_name << '|'
+            << publicants[i].city << '|'
+            << intsToString(publicants[i].b) << '\n';
+    }
+}
+
+void loadPublicants() {
+    ifstream in(PUBLICANTS_FILE);
+    if (!in) return;
+
+    vector<Publicant> loaded;
+    string line;
+    while (getline(in, line)) {
+        if (line.empty()) continue;
+        stringstream ss(line);
+        string id, name, city, books;
+        getline(ss, id, '|');
+        getline(ss, name, '|');
+        getline(ss, city, '|');
+        getline(ss, books, '|');
+
+        try {
+            Publicant p;
+            p.publicant_id = stoi(id);
+            p.publicant_name = name;
+            p.city = city;
+            p.b = stringToInts(books);
+            loaded.push_back(p);
+        } catch (...) {}
+    }
+    publicants = loaded;
+}
+
+void saveBooked() {
+    ofstream out(BORROWED_FILE);
+    if (!out) { cout << "Could not write " << BORROWED_FILE << endl; return; }
+
+    for (int i = 0; i < borrowed.size(); i++) {
+        Date d = borrowed[i].getDate();
+        out << borrowed[i].getId() << '|'
+            << borrowed[i].getTaken() << '|'
+            << borrowed[i].getQuantity() << '|'
+            << d.year << '|' << d.month << '|' << d.day << '\n';
+    }
+}
+
+void loadBorrowed() {
+    ifstream in(BORROWED_FILE);
+    if (!in) return;
+
+    vector<Borrowed_book> loaded;
+    string line;
+    while (getline(in, line)) {
+        if (line.empty()) continue;
+        stringstream ss(line);
+        string id, taken, quan, y, m, d;
+        getline(ss, id, '|');
+        getline(ss, taken, '|');
+        getline(ss, quan, '|');
+        getline(ss, y, '|');
+        getline(ss, m, '|');
+        getline(ss, d, '|');
+
+        try {
+            Date date = {stoi(y), stoi(m), stoi(d)};
+            loaded.push_back(Borrowed_book(stoi(id), stoi(taken) != 0, stoi(quan), date));
+        } catch (...) {}
+    }
+    borrowed = loaded;
+}
+
+void saveCategory() {
+    ofstream out(CATEGORY_FILE);
+    if (!out) { cout << "Could not write " << CATEGORY_FILE << endl; return; }
+
+    for (int i = 0; i < category.size(); i++) {
+        out << category[i] << '\n';
+    }
+}
+
+void loadCategory() {
+    ifstream in(CATEGORY_FILE);
+    if (!in) return;
+
+    vector<string> loaded;
+    string line;
+    while (getline(in, line)) {
+        if (!line.empty()) loaded.push_back(line);
+    }
+    category = loaded;
+}
+
+void saveRequested() {
+    ofstream out(REQUESTED_FILE);
+    if (!out) { cout << "Could not write " << REQUESTED_FILE << endl; return; }
+
+    for (int i = 0; i < requested.size(); i++) {
+        out << requested[i] << '\n';
+    }
+}
+
+void loadRequested() {
+    ifstream in(REQUESTED_FILE);
+    if (!in) return;
+
+    vector<int> loaded;
+    string line;
+    while (getline(in, line)) {
+        try { loaded.push_back(stoi(line)); } catch (...) {}
+    }
+    requested = loaded;
+}
+
+void loadAll() {
+    loadBooks();
+    loadAuthors();
+    loadPublicants();
+    loadBorrowed();
+    loadCategory();
+    loadRequested();
+}
 
 
 
@@ -352,6 +581,9 @@ void displayStudentPanel(){
     command = readInt();
 
     switch(command) {
+        case 1: 
+            studentIssuedBooks();
+            break;
         case 2: 
             showBooks();
             break;
@@ -359,7 +591,7 @@ void displayStudentPanel(){
             displayMainPanel();
             break;
         default: 
-            cout << "command not found";
+            cout << "UKNOWN COMMAND" << endl;
             displayStudentPanel();
     }
 };
@@ -422,6 +654,7 @@ void addCategory() {
     } else {
         category.push_back(new_category);
         cout << "New Category has been successfully added!" << endl;
+        saveCategory();
         manageCategory();
     }
 };
@@ -455,6 +688,7 @@ void editCategory() {
         }
 
         cout << "Category name have been edited successfuly!" << endl;
+        saveCategory();
         manageCategory();
     } else {
         cout << "Category with this name was not found(";
@@ -477,6 +711,7 @@ void deleteCategory() {
             category.erase(category.begin() + i);
             cout << "Category have been successfully deleted" << endl;
             exists = true;
+            saveCategory();
             manageCategory();
             break;
             
@@ -490,7 +725,7 @@ void deleteCategory() {
 }
 
 void showCategory() {
-    cout << "LIST of CATEGORIES: ";
+    cout << endl << "LIST of CATEGORIES: ";
     for (int i  = 0; i < category.size();i++) {
         cout << category[i] << endl;
     }
@@ -508,8 +743,9 @@ void manageAuthors() {
     << "AUTHOR MANAGEMENT" << endl
     << "Delete Author: 1" << endl
     << "Add Author: 2" << endl
-    << "Show Authors: 3" << endl
-    << "Back: 4" << endl << endl
+    << "Edit Author: 3" << endl
+    << "Show Authors: 4" << endl
+    << "Back: 5" << endl << endl
     << "Please enter command number: " <<  endl;
 
     cin >> command;
@@ -521,10 +757,13 @@ void manageAuthors() {
         case 2:
             addAuthor();
             break;
-        case 3:
-            showAuthor();
+        case 3: 
+            editAuthor();
             break;
         case 4:
+            showAuthor();
+            break;
+        case 5:
             displayAdminPanel();
             break;
         default: 
@@ -537,6 +776,7 @@ void manageAuthors() {
 
 void deleteAuthor() {
     string name_author;
+    int wanted_author_id;
     bool  exists = false;
     cout << endl << "DELETING AUTHOR" <<  endl
     << "Please enter author name or surname: ";
@@ -544,14 +784,33 @@ void deleteAuthor() {
     getline(cin, name_author);
     name_author = toLower(name_author);
 
+    
+    for (int i = 0; i < authors.size();i++) {
+        if (toLower(authors[i].author_name) == name_author || toLower(authors[i].author_surname) == name_author || ( toLower(authors[i].author_name) + " " + toLower(authors[i].author_surname ) == name_author)) {
+            wanted_author_id = authors[i].author_id;
+            break;
+        }
+    }
+
+    for (int i = 0; i < library.size();i++) {
+        for (int j = 0 ; j < authors[wanted_author_id].b.size();j++){
+            if (library[i].book_id == authors[wanted_author_id].b[j]){
+                cout << endl << "Cannot remove author before removing his books, please first remove books" << endl;
+                manageAuthors();
+                return;
+            }
+        }
+    }
+    
+
     for (int i = 0; i < authors.size();i++) {
         if (toLower(authors[i].author_name) == name_author || toLower(authors[i].author_surname) == name_author || ( toLower(authors[i].author_name) + " " + toLower(authors[i].author_surname ) == name_author)) {
             authors.erase(authors.begin() + i);
             cout << "Author have been successfully deleted!" << endl;
+            saveAuthors();
             exists = true;
             manageAuthors();
             break;
-
         }
     }
 
@@ -564,7 +823,6 @@ void deleteAuthor() {
 void addAuthor() {
     int id;
     string name, surname;
-    vector<int> b;
 
     cout << endl << "ADDING AUTHOR" << endl;
 
@@ -586,54 +844,173 @@ void addAuthor() {
 
     if (name.empty() || surname.empty()) {
         cout << "Name and surname cannot be empty" << endl;
+        addAuthor();
         return;
-    }
-
-    int bookId;
-    while (true) {
-        cout << "Enter book ID (0 to finish): ";
-        bookId = readInt();
-
-        if (bookId == 0)
-            break;
-
-        bool exists = false;
-        for (int i = 0; i < library.size(); i++) {
-            if (library[i].book_id == bookId) {
-                exists = true;
-                break;
-            }
-        }
-        if (!exists) {
-            cout << "No book with this ID." << endl;
-            continue;
-        }
-
-        bool already = false;
-        for (int i = 0; i < b.size(); i++) {
-            if (b[i] == bookId) {
-                already = true;
-                break;
-            }
-        }
-        if (already) {
-            cout << "Book already added." << endl;
-            continue;
-        }
-
-        b.push_back(bookId);
     }
 
     Author a;
     a.author_id = id;
     a.author_name = name;
     a.author_surname = surname;
-    a.b = b;
 
     authors.push_back(a);
 
     cout << "Author added." << endl;
+    saveAuthors();
     manageAuthors();
+}
+
+void editAuthor() {
+    int command;
+
+    cout << "EDITING AUTHOR" << endl
+    << "Edit name: 1" << endl
+    << "Edit last name: 2" << endl
+    << "Edit book id: 3" << endl
+    << "Back: 4" << endl
+    << "Please enter command number: ";
+    command = readInt();
+
+    switch(command) {
+        case 1: {
+          bool exists = false;
+          string name;
+          int id;
+          cout << "Please enter id of author whose name you want to edit(0 to quit): ";
+          id = readInt();
+
+          if (id == 0) {
+            editAuthor();
+            return;
+          }
+          
+          for (int i = 0; i < authors.size(); i++) {
+            if  (authors[i].author_id == id) {
+                exists = true;
+                break;
+            }
+          }
+
+          if (exists) {
+            cout << "Please enter new name for author with id: " << id;
+            cin >> ws;
+            getline(cin, name);
+            if (name.empty())  {
+                cout << "Name cannot be empty" << endl;
+                editAuthor();
+                return;
+            }
+
+            authors[id].setName(name);
+            cout << "Author name have been successfully updated" << endl;
+            saveAuthors();
+            editAuthor();
+            break;
+          } else {
+            cout << "Author with this id was not found" << endl;
+            editAuthor();
+            break;
+          }
+          
+        };
+        case 2: {
+           bool exists = false;
+          string name;
+          int id;
+          cout << "Please enter id of author whose last name you want to edit(0 to quit): ";
+          id = readInt();
+
+          if (id == 0) {
+            editAuthor();
+            return;
+          }
+          
+          for (int i = 0; i < authors.size(); i++) {
+            if  (authors[i].author_id == id) {
+                exists = true;
+                break;
+            }
+          }
+
+          if (exists) {
+            cout << "Please enter new last name for author with id: " << id;
+            cin >> ws;
+            getline(cin, name);
+            if (name.empty())  {
+                cout << "Last Name cannot be empty" << endl;
+                editAuthor();
+                return;
+            }
+
+            authors[id].setLastName(name);
+            cout << "Author last name have been successfully updated" << endl;
+            saveAuthors();
+            editAuthor();
+            break;
+          } else {
+            cout << "Author with this id was not found" << endl;
+            editAuthor();
+            break;
+          }
+           
+        }
+
+        case 3: {
+          bool exists = false;
+          string name;
+          int id;
+          int bk_id;
+          cout << "Please enter id of author whose published books you want to edit(0 to quit): ";
+          id = readInt();
+
+          if (id == 0) {
+            editAuthor();
+            return;
+          }
+
+          for (int i = 0; i < authors.size(); i++) {
+            if  (authors[i].author_id == id) {
+                exists = true;
+                break;
+            }
+          }
+
+          if (exists) {
+            while(true) {
+                cout << "Enter book id to want to add(0 to quit): ";
+                bk_id = readInt();
+                if (bk_id == 0) {
+                    manageAuthors();
+                    return;
+                }
+
+                authors[id].setBook(bk_id);
+                cout << "Book with this id have been added" << endl;
+                saveAuthors();
+            }
+          } else {
+            cout << "Author with this id was not found" << endl;
+            editAuthor();
+          }
+
+          editAuthor();
+          break;
+        }
+
+        case 4: {
+            manageAuthors();
+            break;
+        }
+    
+        default: {
+            cout << "UNKNOWN COMMAND" << endl;
+            editAuthor();
+            return;
+        }
+          
+    } 
+
+
 }
 
 void showAuthor() {
@@ -801,6 +1178,7 @@ void addBook() {
     new_book.setQuantity(quan);
 
     library.push_back(new_book);
+    saveBooks();
     cout << endl << "New book have been successfully added!" << endl;
     manageBooks();
 }
@@ -808,6 +1186,7 @@ void addBook() {
 void editBook() {
     int book_id;
     bool exists = false;
+    int needed_book;
 
     cout << "EDITING BOOK" << endl
     << "Please enter book_id of the book you want to edit(0 to quit): " << endl;
@@ -819,6 +1198,7 @@ void editBook() {
 
     for (int i = 0; i < library.size();i++) {
         if (library[i].book_id == book_id) {
+            needed_book = i;
             exists = true;
         }
     }
@@ -851,8 +1231,9 @@ void editBook() {
                     manageBooks();
                     break;
                 }
-                library[book_id - 1].setName(name);
+                library[needed_book].setName(name);
                 cout << "Book name was successfully updated" << endl;
+                saveBooks();
                 manageBooks();
                 break;
             }
@@ -860,12 +1241,14 @@ void editBook() {
                 int num;
                 cout << "Please enter book quantity(-1 to quit): ";
                 num = readInt();
-                if (num == 0) {
+                if (num == -1) {
                     manageBooks();
                     break;
                 }
-                library[book_id - 1].setQuantity(num);
+                library[needed_book].setQuantity(num);
                 cout << "Book quantity was successfully updated" <<  endl;
+                saveBooks();
+                manageBooks();
                 break;
             }
             case 3: {
@@ -883,8 +1266,9 @@ void editBook() {
                     manageBooks();
                     break;
                 }
-                library[book_id - 1].setAuthorFirstName(name);
+                library[needed_book].setAuthorFirstName(name);
                 cout << "Book author name was updated successfuly!" << endl;
+                saveBooks();
                 manageBooks();
                 break;
             }
@@ -902,8 +1286,9 @@ void editBook() {
                     manageBooks();
                     break;
                 }
-                library[book_id - 1].setAuthorLastName(surname);
+                library[needed_book].setAuthorLastName(surname);
                 cout << "Book author last name was updated successfuly!" << endl;
+                saveBooks();
                 manageBooks();
                 break;
                 
@@ -922,9 +1307,11 @@ void editBook() {
                     manageBooks();
                     break;
                 }
-                library[book_id - 1].setPublicant(name);
+                library[needed_book].setPublicant(name);
                 cout << "Book publicant name was updated successfully" << endl;
+                saveBooks();
                 manageBooks();
+                
                 break;
             }
             case 6: {
@@ -937,6 +1324,10 @@ void editBook() {
                 break;
             }
         }
+    } else {
+        cout << " Book with this id wasnt found" << endl;
+        editBook();
+        return;
     }
 }
 
@@ -949,17 +1340,24 @@ void deleteBook() {
 
     for ( int i = 0; i < library.size(); i++) {
         if (library[i].book_id == id) {
-            library[i].book_id = 0;
+            library.erase(library.begin() + i);
+            for (int j = 0; j < authors.size(); j++) {
+                for (int l = 0; l < authors[j].b.size(); l++) {
+                    if (authors[j].b[l] == id) {
+                        authors[j].b.erase(authors[j].b.begin() + l);
+                    }
+                }
+            }
             cout << "Book was successfuly removed" << endl;
+            saveBooks();
+            saveAuthors();
             break;
         } 
     }
 
     cout << endl << "REMAINING BOOKS: " << endl;
     for (int i = 0; i < library.size(); i++) {
-        if (library[i].book_id != 0) {
-            cout << library[i].book_id << " | " << library[i].book_name << " | " << library[i].author_name << endl;
-        } 
+        cout << library[i].book_id << " | " << library[i].book_name << " | " << library[i].author_name << endl;
     }
 
     manageBooks();
@@ -980,7 +1378,7 @@ void showBooks() {
 }
 // {1, "The Silent Stage",  true, 1},
 void issueBook() {
-    int book_id, quan;
+    int book_id, quan, year, day, month;
     bool exists = false;
 
 
@@ -1014,11 +1412,76 @@ void issueBook() {
         return;
     }
 
-    Borrowed_book borrowed1(book_id, library[book_id].book_name, true, quan);
+    cout << "Please enter return year(-1 to quit): ";
+    year = readInt();
+    if (year == -1) {
+        displayAdminPanel();
+        return;
+    }
+    if (year < 2026) {
+        cout << "Invalid year, year of return cannot be earler than 2026" << endl;
+        issueBook();
+        return;
+    }
+
+    if (year > 2029) {
+        cout << "Invalid year, year of return must within 3 years from now" << endl;
+        issueBook();
+        return;
+    }
+
+    cout << "Please enter return month(-1 to quit): ";
+    month = readInt();
+    if (month == -1) {
+        displayAdminPanel();
+        return;
+    }
+    if (month < 0) {
+        cout << "Invalid month, there is no month that starts with index of 0" << endl;
+        issueBook();
+        return;
+    }
+
+    if (month > 12) {
+        cout << "Invalid month, there is only 12 months" << endl;
+        issueBook();
+        return;
+    }
+
+    if (month < 11 && year == 2026) {
+        cout << "Invalid month, right now its december of 2026" << endl;
+        issueBook();
+        return;
+    }
+
+    cout << "Please enter return day(-1 to quit): ";
+    day = readInt();
+    if (day == -1) {
+        displayAdminPanel();
+        return;
+    }
+
+     if (day <= 0 || day > 31) {
+        cout << "Invalid day" << endl;
+        issueBook();
+        return;
+    }
+
+    if (day < 20 && month < 11 && year == 2026) {
+        cout << "you cannot set return date thta we have passed" << endl;
+        issueBook();
+        return;
+    }
+
+
+    Date retr = {year, month, day};
+
+    Borrowed_book borrowed1(book_id, true, quan, retr);
 
     borrowed.push_back(borrowed1);
 
     cout << "A book was issued to student" << endl;
+    saveBooked();
     displayAdminPanel();
     return;
 };
@@ -1056,12 +1519,11 @@ void returnBook() {
         if (borrowed[i].getId() == book_id) {
             borrowed[i].setTaken(false);
             cout << endl <<  "Borrowed book has been returned" << endl;
+            saveBooked();
             displayAdminPanel();
             return;
         }
     }
-
-
 }
 
 void manageSearch() {
@@ -1185,11 +1647,11 @@ void manageShow(){
     cout << endl << "VIEW MANAGER" << endl
     << "View Authors: 1" << endl
     << "View Publicants: 2" << endl
-    << "View book manager: 3" << endl
+    << "View Books: 3" << endl
     << "View requested books: 4" << endl
     << "View borrowed books: 5" << endl
     << "Back: 6" << endl
-    << "Please enter command number: " << endl;
+    << "Please enter command number: ";
     command = readInt();
 
     switch(command) {
@@ -1198,6 +1660,15 @@ void manageShow(){
            break;
         case 2:
             showPublicants();
+            break;
+        case 3: 
+            manageViewBooks();
+            break;
+        case 4: 
+            showRequestedBooks();
+            break;
+        case 5: 
+            showBorrowed();
             break;
         case 6:
             displayAdminPanel();
@@ -1249,28 +1720,49 @@ void showPublicants(){
     return;
 } 
 void manageViewBooks(){
-    int command;
-    cout << endl << "VIEW BOOKS" << endl
-    << "Show books in ascending order: 1" << endl
-    << "Show books in descending order: 2" << endl
-    << "Show book as they are: 3" << endl
-    << "Please enter command number: ";
-    command = readInt();
+    
+    cout << endl << "VIEW BOOKS" << endl;
 
-    switch(command) {
-
+    for (int i = 0; i < library.size(); i++) {
+        cout << "Book info: " << "Id: " << library[i].book_id << " | " << "Name: " << library[i].book_name << " | " << "Author: " << library[i].author_name + " " + library[i].author_surname << " | " << "Publicant: " << library[i].book_publicant << endl;
     }
+
+    manageShow();
+    return;
 }; 
 
-void viewBooksOrder(bool is_ordered); // not done
-void showRequestedBooks(); // not done
-void showBorrowed(); // not done
 
+void showRequestedBooks(){
+    cout << endl << "REQUESTED BOOKS: " << endl;
+    for (int i = 0; i < library.size(); i++) {
+        for (int j = 0; j < requested.size();j++){
+            if (library[i].book_id == requested[j]) {
+                cout << "Book id: " << library[i].book_id << " | " << "Book name: " << library[i].book_name << endl;
+            }
+        }
+    }
 
+    manageShow();
+    return;
+}; 
+void showBorrowed(){
+    cout << endl << "BORROWED BOOKS: " << endl;
+    for (int i = 0; i < library.size(); i++) {
+        for (int j = 0; j < borrowed.size(); j++) {
+            if  (library[i].book_id == borrowed[j].getId()) {
+                cout << "Book id: " << library[i].book_id << " | " << "Book name: " << library[i].book_name << " | " << "Return time: " << borrowed[j].getDate().year << " " << borrowed[j].getDate().month << " " << borrowed[j].getDate().day << endl;
+            }
+        }
+    }
+
+    manageShow();
+    return;
+}; 
 
 
 
 void showBooksStudent() {
+    cout  << endl << "FULL LIBRARY" << endl;
     for (int i = 0; i < library.size(); i++) {
         if (library[i].book_id != 0) {
             cout << library[i].book_id << " | " << library[i].book_name << " | " << library[i].author_name << " " << library[i].author_surname << endl;
@@ -1278,6 +1770,22 @@ void showBooksStudent() {
     }
 
     displayStudentPanel();
+    return;
+}
+
+void studentIssuedBooks() {
+    cout << endl << "ISSUED BOOKS AND THEIR RETURN TIME: " << endl;
+    for (int i = 0; i < library.size(); i++) {
+        for (int j = 0; j < borrowed.size(); j++) {
+            if  (library[i].book_id == borrowed[j].getId()) {
+                cout << "Book id: " << library[i].book_id << " | " << "Book name: " << library[i].book_name << " | " << "Return time: " << borrowed[j].getDate().year << " " << borrowed[j].getDate().month << " " << borrowed[j].getDate().day << endl;
+            }
+        }
+    }
+
+    displayStudentPanel();
+    return;
+
 }
 
 
@@ -1286,7 +1794,7 @@ void showBooksStudent() {
 
 
 int main() {
-
+    loadAll();
     displayMainPanel();
 
     return 0;

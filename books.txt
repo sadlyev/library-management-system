@@ -1,0 +1,10 @@
+1|The Silent Stage|Rustam|Sadiyev|Drama|Publicant 1|5
+2|Dragon of the North|Aziz|Yanvarov|Fantasy|Publicant 2|3
+3|Learning C++|Dilnoza|Karimova|Computer|Publicant 3|8
+4|A Brief History|Jasur|Tursunov|History|Publicant 1|4
+5|Love in Samarkand|Malika|Rahimova|Romance|Publicant 4|6
+6|Curtain Call|Rustam|Sadiyev|Drama|Publicant 2|2
+7|The Last Sorcerer|Aziz|Yanvarov|Fantasy|Publicant 3|7
+8|Data Structures|Dilnoza|Karimova|Computer|Publicant 1|10
+9|Silk Road Empires|Jasur|Tursunov|History|Publicant 4|3
+10|Letters at Dawn|Malika|Rahimova|Romance|Publicant 2|1
